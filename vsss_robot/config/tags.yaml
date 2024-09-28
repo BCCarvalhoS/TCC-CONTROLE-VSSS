@@ -1,0 +1,11 @@
+standalone_tags:
+  [
+    {id: 0, name: origem, size: 0.056},
+    {id: 1, name: robot, size: 0.056},
+    {id: 2, name: goal, size: 0.056},
+    {id: 3, size: 0.056},
+    {id: 4, size: 0.056}
+  ]
+tag_bundles:
+  [
+  ]

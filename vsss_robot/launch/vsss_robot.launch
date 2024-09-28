@@ -1,0 +1,88 @@
+Aqui está o arquivo `launch` com os comentários em português:
+
+```xml
+<launch>
+  <!-- Argumentos e parâmetros -->
+  <!-- Define o prefixo de lançamento para comandos adicionais (pode ser usado para depuração) -->
+  <arg name="launch_prefix" default="" />
+  <!-- Define o namespace do nó do AprilTag -->
+  <arg name="node_namespace" default="apriltag_ros_continuous_node" />
+  <!-- Nome da câmera que será utilizada -->
+  <arg name="camera_name" default="/usb_cam" />
+  <!-- Nome do tópico de imagem que a câmera irá publicar -->
+  <arg name="image_topic" default="image_raw" />
+  <!-- Nome do tag do robô -->
+  <arg name="robot_tag" default="robot" />
+  <!-- Nome do tag do objetivo -->
+  <arg name="goal_tag" default="goal" />
+  <!-- Fator de proporcionalidade para controle linear -->
+  <arg name="kp_x" default="0.5" />
+  <!-- Fator de proporcionalidade para controle angular -->
+  <arg name="kp_th" default="1.0" />
+  <!-- Frequência de controle do nó do robô (em Hz) -->
+  <arg name="controller_rate" default="10" />
+
+  <!-- Carregar parâmetros de configuração -->
+  <!-- Carrega o arquivo de configuração settings.yaml no namespace definido -->
+  <rosparam command="load" file="$(find vsss_robot)/config/settings.yaml" ns="$(arg node_namespace)" />
+  <!-- Carrega o arquivo de configuração tags.yaml no namespace definido -->
+  <rosparam command="load" file="$(find vsss_robot)/config/tags.yaml" ns="$(arg node_namespace)" />
+
+  <!-- Nó da câmera USB -->
+  <!-- Inicia o nó da câmera USB, definindo o dispositivo de vídeo e as propriedades da imagem -->
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+    <param name="video_device" value="/dev/video2" /> <!-- Define o dispositivo da câmera USB -->
+    <param name="image_width" value="640" /> <!-- Largura da imagem -->
+    <param name="image_height" value="480" /> <!-- Altura da imagem -->
+    <param name="pixel_format" value="yuyv" /> <!-- Formato de pixel da imagem -->
+    <param name="camera_frame_id" value="usb_cam" /> <!-- ID do frame da câmera -->
+    <param name="io_method" value="mmap" /> <!-- Método de IO para captura de imagem -->
+  </node>
+
+  <!-- Nó do AprilTag -->
+  <!-- Inicia o nó do AprilTag para detecção de marcadores AprilTag -->
+  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)">
+    <!-- Redireciona o tópico de imagem bruta da câmera para o nó do AprilTag -->
+    <remap from="image_rect" to="$(arg camera_name)/$(arg image_topic)" />
+    <!-- Redireciona as informações da câmera -->
+    <remap from="camera_info" to="$(arg camera_name)/camera_info" />
+    <!-- Define para publicar a imagem com as detecções de tags -->
+    <param name="publish_tag_detections_image" type="bool" value="true" />
+  </node>
+
+  <!-- Nó de visualização da imagem -->
+  <!-- Inicia o nó para visualizar as imagens com as detecções de tags -->
+  <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <!-- Redireciona a imagem com as detecções de tags para a visualização -->
+    <remap from="image" to="/tag_detections_image"/>
+    <!-- Ajusta automaticamente o tamanho da janela de visualização para caber a imagem -->
+    <param name="autosize" value="true" />
+  </node>
+
+  <!-- Nó para comunicação serial com ESP32 via Wi-Fi -->
+  <!-- Inicia o nó para comunicação serial com o ESP32 via protocolo TCP -->
+  <node name="serial_node" pkg="vsss_robot" type="serial_node.py" output="screen">
+    <param name="port" value="tcp" /> <!-- Define o tipo de comunicação como TCP -->
+    <param name="tcp_port" value="11411" /> <!-- Define a porta TCP para a comunicação -->
+    <param name="fork_server" value="false" /> <!-- Não forka um novo servidor -->
+  </node>
+
+  <!-- Nó de controle do robô -->
+  <!-- Inicia o nó que controla o robô, enviando comandos de velocidade baseados na detecção de tags -->
+  <node name="robot_control" pkg="vsss_robot" type="robot_control.py" output="screen">
+    <!-- Define o nome do tag do robô -->
+    <param name="robot_tag" value="$(arg robot_tag)" />
+    <!-- Define o nome do tag do objetivo -->
+    <param name="goal_tag" value="$(arg goal_tag)" />
+    <!-- Define o fator de controle linear proporcional -->
+    <param name="kp_x" value="$(arg kp_x)" />
+    <!-- Define o fator de controle angular proporcional -->
+    <param name="kp_th" value="$(arg kp_th)" />
+    <!-- Define a taxa de controle do nó em Hz -->
+    <param name="controller_rate" value="$(arg controller_rate)" />
+  </node>
+
+</launch>
+```
+
+Agora o arquivo contém comentários em português explicando o propósito de cada nó e parâmetro. Isso facilita a compreensão do código e o uso correto dos nós e parâmetros do ROS.
