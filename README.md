@@ -13,5 +13,7 @@ A seguir, a lista de pacotes que devem ser instalados antes de utilizar o pacote
 
 Verificar as versões compatíveis, para o trabalho foram usadas versões do ROS, não foram usadas as versões do **ROS 2**.
 
+**Link** do vídeo que demonstra a movimentação do robô até atingir os objetivo: [Vídeo disponível no youtube](https://youtu.be/SbYGCr6oSyk?si=AnBbeyAIUtKmZXFq)
+
 
 
